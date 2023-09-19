@@ -17,6 +17,8 @@
   [Getting Started](#rocket-getting-started) - [FAQ](#question-faqs) - [Documentation](https://docs.bearer.com) - [Report a Bug](https://github.com/Bearer/bearer/issues/new/choose) - [Discord Community][discord]
 
   [![GitHub Release][release-img]][release]
+  [![Scorecard supply-chain security](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml)
+  [![CodeQL](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql)
   [![Test][test-img]][test]
   [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
   [![Discord](https://img.shields.io/discord/1042147477765242973?label=discord)][discord]
@@ -306,7 +308,6 @@ Bearer CLI code is licensed under the terms of the [Elastic License 2.0](LICENSE
 You are not allowed to provide Bearer CLI to third parties as a hosted or managed service without the explicit approval of Bearer Inc.
 
 ---
-
 [test]: https://github.com/Bearer/bearer/actions/workflows/test.yml
 [test-img]: https://github.com/Bearer/bearer/actions/workflows/test.yml/badge.svg
 [release]: https://github.com/Bearer/bearer/releases
