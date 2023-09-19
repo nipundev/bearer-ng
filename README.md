@@ -17,6 +17,7 @@
   [Getting Started](#rocket-getting-started) - [FAQ](#question-faqs) - [Documentation](https://docs.bearer.com) - [Report a Bug](https://github.com/Bearer/bearer/issues/new/choose) - [Discord Community][discord]
 
   [![GitHub Release][release-img]][release]
+  [![Gosec](https://github.com/nipundev/bearer-ng/actions/workflows/gosec.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/gosec.yml)
   [![Scorecard supply-chain security](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml)
   [![CodeQL](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql)
   [![Semgrep](https://github.com/nipundev/bearer-ng/actions/workflows/semgrep.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/semgrep.yml)
