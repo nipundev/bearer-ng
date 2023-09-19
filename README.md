@@ -19,6 +19,7 @@
   [![GitHub Release][release-img]][release]
   [![Scorecard supply-chain security](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/scorecard.yml)
   [![CodeQL](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/github-code-scanning/codeql)
+  [![Semgrep](https://github.com/nipundev/bearer-ng/actions/workflows/semgrep.yml/badge.svg)](https://github.com/nipundev/bearer-ng/actions/workflows/semgrep.yml)
   [![Test][test-img]][test]
   [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
   [![Discord](https://img.shields.io/discord/1042147477765242973?label=discord)][discord]
