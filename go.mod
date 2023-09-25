@@ -11,12 +11,11 @@ require (
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/gitsight/go-vcsurl v1.0.1
-	github.com/go-enry/go-enry/v2 v2.8.4
+	github.com/go-enry/go-enry/v2 v2.8.5
 	github.com/go-git/go-git/v5 v5.8.1
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/hhatto/gocloc v0.5.1
-	github.com/jessevdk/go-flags v1.5.0
 	github.com/onsi/ginkgo/v2 v2.12.0
 	github.com/onsi/gomega v1.27.10
 	github.com/open-policy-agent/opa v0.56.0
