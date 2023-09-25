@@ -3,7 +3,7 @@ module github.com/bearer/bearer
 go 1.21
 
 require (
-	github.com/bits-and-blooms/bitset v1.8.0
+	github.com/bits-and-blooms/bitset v1.9.0
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/buildkite/terminal v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.1
@@ -16,7 +16,6 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/hhatto/gocloc v0.5.1
-	github.com/jessevdk/go-flags v1.5.0
 	github.com/onsi/ginkgo/v2 v2.12.0
 	github.com/onsi/gomega v1.27.10
 	github.com/open-policy-agent/opa v0.56.0
