@@ -204,6 +204,9 @@ children:
                     - type: expression_statement
                       id: 43
                       range: 7:5 - 7:15
+                      dataflow_sources:
+                        - 44
+                        - 48
                       children:
                         - type: assignment_expression
                           id: 44
@@ -266,6 +269,9 @@ children:
                     - type: expression_statement
                       id: 56
                       range: 10:5 - 10:19
+                      dataflow_sources:
+                        - 57
+                        - 65
                       children:
                         - type: assignment_expression
                           id: 57
@@ -316,6 +322,9 @@ children:
                     - type: expression_statement
                       id: 66
                       range: 11:5 - 11:20
+                      dataflow_sources:
+                        - 67
+                        - 71
                       children:
                         - type: assignment_expression
                           id: 67
@@ -354,6 +363,21 @@ children:
   data:
     value: Hello World
     isliteral: true
+- node: 44
+  content: s += "!!"
+  data:
+    value: Hello World!!!
+    isliteral: true
+- node: 57
+  content: s2 += args[0]
+  data:
+    value: hey *
+    isliteral: false
+- node: 67
+  content: s2 += " there"
+  data:
+    value: hey * there
+    isliteral: false
 - node: 38
   content: Greeting + "!"
   data:

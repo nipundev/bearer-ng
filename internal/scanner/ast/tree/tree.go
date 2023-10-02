@@ -3,7 +3,9 @@ package tree
 import (
 	"fmt"
 
+	"github.com/bits-and-blooms/bitset"
 	sitter "github.com/smacker/go-tree-sitter"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
 )
@@ -28,7 +30,7 @@ type Node struct {
 	children,
 	dataflowSources,
 	aliasOf []*Node
-	disabledRuleIndices []int
+	disabledRuleIndices *bitset.BitSet
 	// FIXME: remove the need for this
 	sitterNode   *sitter.Node
 	queryResults map[int][]QueryResult
@@ -97,6 +99,14 @@ func (node *Node) Children() []*Node {
 	return node.children
 }
 
+func (node *Node) IsMissing() bool {
+	return node.sitterNode.IsMissing()
+}
+
+func (node *Node) IsError() bool {
+	return node.sitterNode.IsError()
+}
+
 // FIXME: can we remove this?
 func (node *Node) NamedChildren() []*Node {
 	namedChildren := make([]*Node, 0, len(node.children))
@@ -123,8 +133,12 @@ func (node *Node) AliasOf() []*Node {
 	return node.aliasOf
 }
 
-func (node *Node) DisabledRuleIndices() []int {
-	return node.disabledRuleIndices
+func (node *Node) RuleDisabled(index int) bool {
+	if node.disabledRuleIndices == nil {
+		return false
+	}
+
+	return node.disabledRuleIndices.Test(uint(index))
 }
 
 func (node *Node) QueryResults(queryID int) []QueryResult {
@@ -143,6 +157,7 @@ type nodeDump struct {
 	DataflowSources []int      `yaml:"dataflow_sources,omitempty"`
 	AliasOf         []int      `yaml:"alias_of,omitempty"`
 	Queries         []int      `yaml:",omitempty"`
+	DisabledRules   []int      `yaml:",omitempty"`
 	Children        []nodeDump `yaml:",omitempty"`
 }
 
@@ -162,11 +177,17 @@ func (node *Node) dumpValue() nodeDump {
 		childDump[i] = child.dumpValue()
 	}
 
-	var queries []int
-	for queryID := range node.queryResults {
-		queries = append(queries, queryID)
-	}
+	queries := maps.Keys(node.queryResults)
 	slices.Sort(queries)
+
+	var disabledRules []int
+	if node.disabledRuleIndices != nil {
+		for i := 0; i < int(node.disabledRuleIndices.Len()); i++ {
+			if node.disabledRuleIndices.Test(uint(i)) {
+				disabledRules = append(disabledRules, i)
+			}
+		}
+	}
 
 	contentRange := fmt.Sprintf(
 		"%d:%d - %d:%d",
@@ -190,6 +211,7 @@ func (node *Node) dumpValue() nodeDump {
 		AliasOf:         nodeListToID(node.aliasOf),
 		Children:        childDump,
 		Queries:         queries,
+		DisabledRules:   disabledRules,
 	}
 }
 
