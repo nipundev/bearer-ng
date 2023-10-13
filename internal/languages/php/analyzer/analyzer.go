@@ -37,7 +37,7 @@ func (analyzer *analyzer) Analyze(node *sitter.Node, visitChildren func() error)
 		return analyzer.analyzeMethodInvocation(node, visitChildren)
 	case "member_access_expression":
 		return analyzer.analyzeFieldAccess(node, visitChildren)
-	case "simple_parameter", "variadic_parameter":
+	case "simple_parameter", "variadic_parameter", "property_promotion_parameter":
 		return analyzer.analyzeParameter(node, visitChildren)
 	case "switch_statement":
 		return analyzer.analyzeSwitch(node, visitChildren)
@@ -47,6 +47,8 @@ func (analyzer *analyzer) Analyze(node *sitter.Node, visitChildren func() error)
 		return visitChildren()
 	case "dynamic_variable_name":
 		return analyzer.analyzeDynamicVariableName(node, visitChildren)
+	case "subscript_expression":
+		return analyzer.analyzeSubscript(node, visitChildren)
 	case "binary_expression",
 		"unary_op_expression",
 		"argument",
@@ -57,7 +59,9 @@ func (analyzer *analyzer) Analyze(node *sitter.Node, visitChildren func() error)
 		"include_expression",
 		"include_once_expression",
 		"require_expression",
-		"require_once_expression":
+		"require_once_expression",
+		"echo_statement",
+		"print_intrinsic":
 		return analyzer.analyzeGenericOperation(node, visitChildren)
 	case "while_statement", "do_statement", "if_statement", "expression_statement", "compound_statement": // statements don't have results
 		return visitChildren()
@@ -174,6 +178,17 @@ func (analyzer *analyzer) analyzeSwitch(node *sitter.Node, visitChildren func() 
 
 func (analyzer *analyzer) analyzeDynamicVariableName(node *sitter.Node, visitChildren func() error) error {
 	analyzer.lookupVariable(node.NamedChild(0))
+
+	return visitChildren()
+}
+
+// foo["bar"]
+func (analyzer *analyzer) analyzeSubscript(node *sitter.Node, visitChildren func() error) error {
+	object := node.NamedChild(0)
+	analyzer.builder.Dataflow(node, object)
+	analyzer.lookupVariable(object)
+
+	analyzer.lookupVariable(node.NamedChild(1))
 
 	return visitChildren()
 }

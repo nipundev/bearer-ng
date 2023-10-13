@@ -20,6 +20,9 @@ var (
 	patternMatchNodeContainerTypes = []string{"formal_parameters", "simple_parameter", "argument"}
 
 	allowedPatternQueryTypes = []string{"_"}
+
+	functionRegex      = regexp.MustCompile(`\bfunction\b`)
+	parameterTypeRegex = regexp.MustCompile(`[,(]\s*(public|private|protected|var)?\s*\z`)
 )
 
 type Pattern struct {
@@ -39,7 +42,23 @@ func (*Pattern) FixupMissing(node *tree.Node) string {
 }
 
 func (*Pattern) FixupVariableDummyValue(input []byte, node *tree.Node, dummyValue string) string {
-	if slices.Contains([]string{"named_type"}, node.Parent().Type()) {
+	addDollar := false
+
+	if parent := node.Parent(); parent != nil {
+		if parent.Type() == "named_type" {
+			addDollar = true
+		}
+
+		if parent.Type() == "ERROR" && parent.Parent() != nil && parent.Parent().Type() == "declaration_list" {
+			parentContent := []byte(parent.Content())
+			parentPrefix := string(parentContent[:node.ContentStart.Byte-parent.ContentStart.Byte])
+
+			isFunctionName := functionRegex.MatchString(parentPrefix) && !strings.Contains(parentPrefix, "(")
+			addDollar = !isFunctionName && !parameterTypeRegex.MatchString(parentPrefix)
+		}
+	}
+
+	if addDollar {
 		return "$" + dummyValue
 	}
 
@@ -109,6 +128,13 @@ func (*Pattern) IsLeaf(node *tree.Node) bool {
 	return false
 }
 
+func (*Pattern) AnonymousParentTypes() []string {
+	return []string{
+		"binary_expression",
+		"unary_op_expression",
+	}
+}
+
 func (*Pattern) LeafContentTypes() []string {
 	return []string{
 		"encapsed_string",
@@ -125,9 +151,25 @@ func (*Pattern) IsAnchored(node *tree.Node) (bool, bool) {
 		return false, false
 	}
 
+	// Named arguments are unanchored
+	// eg. f(x: 42)
+	if node.Type() == "argument" && node.ChildByFieldName("name") != nil {
+		return false, false
+	}
+
+	if node.Type() == "property_element" {
+		return false, true
+	}
+
 	parent := node.Parent()
 	if parent == nil {
 		return true, true
+	}
+
+	// optional type on parameters
+	if slices.Contains([]string{"property_promotion_parameter", "simple_parameter"}, parent.Type()) &&
+		node == parent.ChildByFieldName("name") {
+		return false, true
 	}
 
 	if parent.Type() == "method_declaration" {
@@ -150,6 +192,13 @@ func (*Pattern) IsAnchored(node *tree.Node) (bool, bool) {
 		node.Type() == "array_element_initializer" &&
 		len(node.NamedChildren()) == 2 {
 		return false, false
+	}
+
+	// `new Foo` should match `new Foo()`
+	if parent.Type() == "object_creation_expression" {
+		if node == parent.NamedChildren()[0] {
+			return true, false
+		}
 	}
 
 	// Class body declaration_list

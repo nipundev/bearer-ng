@@ -38,7 +38,7 @@ import (
 	"github.com/bearer/bearer/internal/types"
 )
 
-var ErrFileListEmpty = errors.New("couldn't find any files to scan in the specified directory")
+var ErrFileListEmpty = errors.New("couldn't find any files to scan in the specified directory, for diff scans this can mean the compared branches were identical")
 
 // TargetKind represents what kind of artifact bearer scans
 type TargetKind string
@@ -267,8 +267,8 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	if opts.RuleOptions.DisableDefaultRules {
 		metaLanguageList = make([]string, 0)
 	}
-	// deal with no version check here
-	versionMeta, err := version_check.GetVersionMeta(ctx, metaLanguageList)
+
+	versionMeta, err := version_check.GetScanVersionMeta(ctx, opts, metaLanguageList)
 	if err != nil {
 		log.Debug().Msgf("failed: %s", err)
 	} else {

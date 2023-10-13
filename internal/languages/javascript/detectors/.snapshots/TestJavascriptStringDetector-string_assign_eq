@@ -189,12 +189,12 @@ children:
 - node: 19
   content: x += name
   data:
-    value: ab*
+    value: ab�
     isliteral: false
 - node: 30
   content: y += "c"
   data:
-    value: '*c'
+    value: �c
     isliteral: false
 - node: 6
   content: '"a"'
@@ -208,6 +208,21 @@ children:
     isliteral: true
 - node: 33
   content: '"c"'
+  data:
+    value: c
+    isliteral: true
+- node: 8
+  content: a
+  data:
+    value: a
+    isliteral: true
+- node: 16
+  content: b
+  data:
+    value: b
+    isliteral: true
+- node: 35
+  content: c
   data:
     value: c
     isliteral: true
