@@ -103,7 +103,8 @@ func NewRunner(
 	log.Debug().Msgf("creating report %s", path)
 
 	if _, err := os.Stat(completedPath); err == nil {
-		if !scanSettings.Scan.Force {
+		if !scanSettings.Scan.Force && scanSettings.Scan.DiffBaseBranch == "" {
+			// force is not set, and we are not running a diff scan
 			r.reuseDetection = true
 			log.Debug().Msgf("reuse detection for %s", path)
 			r.reportPath = completedPath
@@ -380,6 +381,7 @@ func (r *runner) Report(
 	if err != nil {
 		return false, err
 	}
+	reportoutput.UploadReportToCloud(reportData, r.scanSettings)
 
 	endTime := time.Now()
 

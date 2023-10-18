@@ -10,9 +10,8 @@ import (
 
 type ReportData struct {
 	ReportFailed              bool
-	SendToCloud               bool
 	Files                     []string
-	FoundLanguages            []string
+	FoundLanguages            map[string]int32 // language => loc e.g. { "Ruby": 6742, "JavaScript": 122 }
 	Detectors                 []any
 	Dataflow                  *DataFlow
 	FindingsBySeverity        map[string][]securitytypes.Finding
