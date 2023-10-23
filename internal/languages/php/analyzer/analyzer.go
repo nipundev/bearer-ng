@@ -49,6 +49,10 @@ func (analyzer *analyzer) Analyze(node *sitter.Node, visitChildren func() error)
 		return analyzer.analyzeDynamicVariableName(node, visitChildren)
 	case "subscript_expression":
 		return analyzer.analyzeSubscript(node, visitChildren)
+	case "catch_clause":
+		return analyzer.analyzeCatchClause(node, visitChildren)
+	case "foreach_statement":
+		return analyzer.analyzeForeach(node, visitChildren)
 	case "binary_expression",
 		"unary_op_expression",
 		"argument",
@@ -191,6 +195,37 @@ func (analyzer *analyzer) analyzeSubscript(node *sitter.Node, visitChildren func
 	analyzer.lookupVariable(node.NamedChild(1))
 
 	return visitChildren()
+}
+
+// catch(FooException | BarException $e) {}
+func (analyzer *analyzer) analyzeCatchClause(node *sitter.Node, visitChildren func() error) error {
+	return analyzer.withScope(language.NewScope(analyzer.scope), func() error {
+		name := node.ChildByFieldName("name")
+		analyzer.scope.Declare(analyzer.builder.ContentFor(name), name)
+
+		return visitChildren()
+	})
+}
+
+// foreach ($array as $value) {}
+// foreach ($array as $key => $value) {}
+func (analyzer *analyzer) analyzeForeach(node *sitter.Node, visitChildren func() error) error {
+	return analyzer.withScope(language.NewScope(analyzer.scope), func() error {
+		array := node.NamedChild(0)
+		analyzer.lookupVariable(array)
+
+		value := node.NamedChild(1)
+		if value.Type() == "pair" {
+			key := value.NamedChild(0)
+			analyzer.scope.Declare(analyzer.builder.ContentFor(key), key)
+			value = value.NamedChild(1)
+		}
+
+		analyzer.scope.Declare(analyzer.builder.ContentFor(value), value)
+		analyzer.builder.Dataflow(value, array)
+
+		return visitChildren()
+	})
 }
 
 // default analysis, where the children are assumed to be aliases
