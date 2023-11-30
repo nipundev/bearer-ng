@@ -6,6 +6,7 @@ import (
 
 	"github.com/hhatto/gocloc"
 
+	"github.com/bearer/bearer/cmd/bearer/build"
 	"github.com/bearer/bearer/internal/commands/process/settings"
 	"github.com/bearer/bearer/internal/flag"
 	"github.com/bearer/bearer/internal/report/output/gitlab"
@@ -22,6 +23,13 @@ type Formatter struct {
 	GoclocResult *gocloc.Result
 	StartTime    time.Time
 	EndTime      time.Time
+}
+
+type JsonV2Output struct {
+	Source   string             `json:"source" yaml:"source"`
+	Version  string             `json:"version" yaml:"version"`
+	Findings RawFindings        `json:"findings" yaml:"findings"`
+	Expected ExpectedDetections `json:"expected_findings,omitempty" yaml:"expected_findings,omitempty"`
 }
 
 func NewFormatter(reportData *outputtypes.ReportData, config settings.Config, goclocResult *gocloc.Result, startTime time.Time, endTime time.Time) *Formatter {
@@ -58,6 +66,13 @@ func (f Formatter) Format(format string) (output string, err error) {
 		return outputhandler.ReportJSON(sastContent)
 	case flag.FormatJSON:
 		return outputhandler.ReportJSON(f.ReportData.FindingsBySeverity)
+	case flag.FormatJSONV2:
+		return outputhandler.ReportJSON(JsonV2Output{
+			Source:   "Bearer",
+			Version:  build.Version,
+			Findings: f.ReportData.RawFindings,
+			Expected: f.ReportData.ExpectedDetections,
+		})
 	case flag.FormatYAML:
 		return outputhandler.ReportYAML(f.ReportData.FindingsBySeverity)
 	case flag.FormatHTML:

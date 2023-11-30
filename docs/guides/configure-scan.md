@@ -25,20 +25,21 @@ bearer scan . --scanner secrets
 ## Only report new findings on a branch
 
 {% callout %}
-  Differential scanning avoids scanning your entire codebase and drastically
-  reduces scan times. We recommended that you use this feature when possible.
+Differential scanning avoids scanning your entire codebase and drastically
+reduces scan times. We recommended that you use this feature when possible.
 {% endcallout %}
 
 When scanning a Git repository, you can choose to only report new findings that
 have been introduced, relative to a base branch. Any findings that already
 existed in the base branch will not be reported.
 
-Use the `DIFF_BASE_BRANCH` environment variable to enable differential scanning,
-and to specify the base branch to use for comparison.
+Use the `--diff` flag to enable differential scanning. The repository's default
+branch will be used as the base branch for comparison. You can override this by
+setting the `BEARER_DIFF_BASE_BRANCH` environment variable.
 
 ```bash
 git checkout my-feature
-DIFF_BASE_BRANCH=main bearer scan .
+BEARER_DIFF_BASE_BRANCH=base-branch bearer scan --diff .
 ```
 
 If the base branch is not available in the git repository, it's head will be
@@ -59,7 +60,7 @@ To ignore this finding, run: bearer ignore add 4b0883d52334dfd9a4acce2fcf810121_
 ...
 ```
 
-If a finding is not relevant, you can ignore it automatically from future scans using the ```bearer ignore add``` command. This adds the finding's fingerprint to your ignore file. You can also provide optional author information or a comment:
+If a finding is not relevant, you can ignore it automatically from future scans using the `bearer ignore add` command. This adds the finding's fingerprint to your ignore file. You can also provide optional author information or a comment:
 
 ```bash
 bearer ignore add 4b0883d52334dfd9a4acce2fcf810121_0 \

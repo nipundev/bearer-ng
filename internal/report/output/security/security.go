@@ -42,6 +42,8 @@ var severityColorFns = map[string]func(x ...interface{}) string{
 	globaltypes.LevelWarning:  color.New(color.FgCyan).SprintFunc(),
 }
 
+type ExpectedDetections = []types.ExpectedDetection
+type RawFindings = []types.RawFinding
 type Findings = map[string][]types.Finding
 type IgnoredFindings = map[string][]types.IgnoredFinding
 
@@ -99,6 +101,28 @@ func AddReportData(
 		return err
 	}
 
+	for severity, findingsSlice := range summaryFindings {
+		for _, finding := range findingsSlice {
+			reportData.RawFindings = append(reportData.RawFindings, finding.ToRawFinding(severity))
+		}
+	}
+
+	for _, expectedDetectionPerRule := range dataflow.ExpectedDetections {
+		for _, location := range expectedDetectionPerRule.Locations {
+			reportData.ExpectedDetections = append(reportData.ExpectedDetections, types.ExpectedDetection{
+				RuleID: expectedDetectionPerRule.DetectorID,
+				Location: types.Location{
+					Start: location.Source.StartLineNumber,
+					End:   location.Source.EndLineNumber,
+					Column: types.Column{
+						Start: location.Source.StartColumnNumber,
+						End:   location.Source.EndColumnNumber,
+					},
+				},
+			})
+		}
+	}
+
 	if !config.Scan.Quiet {
 		fingerprintOutput(
 			append(fingerprints, builtInFingerprints...),
@@ -106,7 +130,7 @@ func AddReportData(
 			config.Report.ExcludeFingerprint,
 			config.IgnoredFingerprints,
 			config.StaleIgnoredFingerprintIds,
-			config.Scan.DiffBaseBranch != "",
+			config.Scan.Diff,
 		)
 	}
 
@@ -430,7 +454,7 @@ func BuildReportString(reportData *outputtypes.ReportData, config settings.Confi
 	reportStr.WriteString("\nNeed help or want to discuss the output? Join the Community https://discord.gg/eaHZBJUXRF\n")
 
 	if config.Client == nil {
-		reportStr.WriteString("\nManage your findings directly on Bearer Cloud. Start now for free https://my.bearer.sh/users/sign_up or learn more https://docs.bearer.com/guides/bearer-cloud/\n")
+		reportStr.WriteString("\nRetain state and manage your findings directly on Bearer Cloud. Learn more at https://docs.bearer.com/guides/bearer-cloud/\n")
 	}
 
 	color.NoColor = initialColorSetting
